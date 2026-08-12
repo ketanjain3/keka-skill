@@ -1,19 +1,17 @@
-# Keka Timesheet Manager
+# Keka Expense Manager
 
-CLI tool for authenticating with Keka HR, generating timesheet PDF reports, uploading them to Google Drive, and managing expense claims.
+CLI tool for authenticating with Keka HR and managing expense claims.
 
 ## Components
 
 | Component | Description |
 |-----------|--------------|
-| `keka-main/keka.py` | Main CLI: login, timesheet, upload, curl, expense |
-| `google_drive/drive.py` | Google Drive upload helper, used by `keka.py upload` |
+| `keka-main/keka.py` | Main CLI: login, logout, curl, expense |
 
 ## Prerequisites
 
 - Python 3.13+ with [uv](https://github.com/astral-sh/uv) (keka.py is a `uv run --script` file with inline dependencies)
 - Google Chrome (for browser-based OAuth login)
-- A `google_drive/client_secret.json` OAuth client (only needed for `keka upload`)
 
 ## Usage
 
@@ -21,13 +19,6 @@ CLI tool for authenticating with Keka HR, generating timesheet PDF reports, uplo
 # Authenticate with Keka (opens Chrome)
 ./keka-main/keka.py login
 ./keka-main/keka.py logout
-
-# Timesheet: generate a PDF report
-./keka-main/keka.py timesheet --date 2025-12-01 --client "JPMC" --employee "Ketan"
-./keka-main/keka.py timesheet <employeeTimesheetId> --output report.pdf
-
-# Timesheet: generate PDF and upload to Google Drive
-./keka-main/keka.py upload --date 2025-12-01 --client "JPMC" --employee "Ketan"
 
 # Authenticated passthrough to curl
 ./keka-main/keka.py curl https://think41.keka.com/api/v1/me
@@ -43,7 +34,6 @@ CLI tool for authenticating with Keka HR, generating timesheet PDF reports, uplo
 
 - Keka credentials are stored in the system keyring (falls back to `~/.keka/credentials.json`).
 - Keka tenant domain is hardcoded to `think41.keka.com` in `keka.py`.
-- Google Drive credentials live in `google_drive/client_secret.json` / `google_drive/token.json` (not in repo). Default upload folder ID is set in `google_drive/drive.py`.
 
 ## Reference
 

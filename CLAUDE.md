@@ -6,7 +6,6 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 This repository contains tools for managing Keka HR data (expenses):
 - **keka-main/keka.py** - CLI tool for Keka API authentication and expense operations
-- **google_drive/drive.py** - standalone Google Drive upload utility (not currently invoked by keka.py)
 
 ## Skills
 
@@ -119,16 +118,7 @@ Assistant: Your last expense claim was on February 10, 2026 at 6:39 PM
 ./keka-main/keka.py curl https://think41.keka.com/api/v1/me
 ```
 
-### drive.py Commands
-
-```bash
-# Upload a file to Google Drive
-python google_drive/drive.py <file_path> [folder_id]
-```
-
 ## Development Notes
 
 - Keka credentials are stored in system keyring
-- Google Drive credentials are in `google_drive/token.json`
-- Default Drive folder ID: `1gQD1-7a8fv6zA0OBy65gQz7N_UE6x6x0`
 - Keka domain: `think41.keka.com`
