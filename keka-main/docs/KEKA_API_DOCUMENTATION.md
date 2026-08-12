@@ -19,13 +19,13 @@ Keka is a comprehensive HR management platform. This documentation covers the GE
 | [Attendance](#attendance) | Attendance tracking and management | 3 |
 | [Bulk Operations](#bulk-operations) | Report builder and file exports | 7 |
 | [Dashboard](#dashboard) | Dashboard widgets and employee data | 18 |
-| [Core (Default)](#core-default) | Lookups, organization, exit, expense, inbox | 67 |
+| [Core (Default)](#core-default) | Lookups, organization, exit, expense, inbox | 53 |
 | [Engage](#engage) | Employee engagement and surveys | 3 |
-| [Leave](#leave) | Leave management and approvals | 13 |
+| [Leave](#leave) | Leave management and approvals | 12 |
 | [Payroll](#payroll) | Payroll configuration and lookups | 6 |
 | [Platform](#platform) | Employee profile data | 1 |
 | [Report Builder](#report-builder) | Report scheduling and widgets | 2 |
-| [Timesheet](#timesheet) | Timesheet and project management | 27 |
+| [Timesheet](#timesheet) | Timesheet and project management | 25 |
 
 ---
 
@@ -61,7 +61,7 @@ Attendance tracking, clock-in/out, and attendance metrics.
 | Endpoint | Description |
 |----------|-------------|
 | `GET /k/attendance/api/employee/allpendingapprovalscount` | Get count of all pending attendance approvals |
-| `GET /k/attendance/api/myteam/summary/{level}/attendancemetrics` | Get team attendance metrics by group |
+| `GET /k/attendance/api/myteam/summary/{timePeriod}/attendancemetrics` | Get team attendance metrics by group |
 | `GET /k/attendance/api/mytime/attendance/getcurrentdate` | Get current server date/time |
 
 ### Parameters
@@ -214,11 +214,11 @@ Reference data for forms and filters.
 
 | Endpoint | Description |
 |----------|-------------|
-| `GET /k/default/api/expense/claims/pending` | Get pending expense claims |
-| `GET /k/default/api/expense/claims/past` | Get past expense claims |
-| `GET /k/default/api/expense/claims/advance/pending` | Get pending advance requests |
-| `GET /k/default/api/expense/claims/pendingapprovalscount` | Get expense approvals count |
-| `GET /k/default/api//organization/expensesettings` | Get organization expense settings |
+| `GET /k/default/api/me/expenses/claims/pending` | Get pending expense claims |
+| `GET /k/default/api/me/expenses/claims/past` | Get past expense claims (verified in production use, see [keka.py](../keka.py)) |
+| `GET /k/default/api/me/expenses/claims/advance/pending` | Get pending advance requests |
+| `GET /k/default/api/me/expenses/claims/pendingapprovalscount` | Get expense approvals count |
+| `GET /k/default/api//organization/expensesettings` | Get organization expense settings (double slash is intentional - present in captured traffic and in `keka_openapi.yaml`, not a typo) |
 
 ### Inbox/Approvals
 
@@ -472,18 +472,7 @@ Timesheet management and project tracking.
 
 ## Files Generated
 
-1. **`keka_openapi.yaml`** - Unified OpenAPI 3.0 specification with all endpoints
-2. **Individual module files in `api_docs/`:**
-   - `attendance_openapi.yaml`
-   - `bulk_openapi.yaml`
-   - `dashboard_openapi.yaml`
-   - `default_openapi.yaml`
-   - `engage_openapi.yaml`
-   - `leave_openapi.yaml`
-   - `payroll_openapi.yaml`
-   - `platform_openapi.yaml`
-   - `report_builder_openapi.yaml`
-   - `timesheet_openapi.yaml`
+1. **[`keka_openapi.yaml`](./keka_openapi.yaml)** - Unified OpenAPI 3.0 specification, the source this document was derived from. It contains ~140 GET paths, more than are broken out by module below - treat it as the more complete reference and this document as a curated summary.
 
 ---
 
