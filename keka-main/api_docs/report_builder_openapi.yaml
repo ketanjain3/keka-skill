@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: Keka Report Builder API
+  description: API endpoints for Keka HR Report Builder - Report Schedules and Widgets
+  version: 1.0.0
+
+paths:
+  /report-builder/api/v1/widgets/reaction-aggregates:
+    get:
+      operationId: getWidgetReactionAggregates
+      summary: Retrieve widget reaction aggregates for analytics dashboards
+      description: |
+        Fetches a list of widget reaction aggregates used for HR analytics,
+        including KPIs for attrition, employee exits, and organizational metrics.
+      parameters: []
+      responses:
+        '200':
+          description: Successful response with widget reaction aggregates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetReactionAggregatesResponse'
+
+  /report-builder/api/v1/report-schedules:
+    get:
+      operationId: getReportSchedules
+      summary: Retrieve scheduled reports for a specific report definition
+      description: |
+        Fetches a paginated list of report schedules associated with a
+        given report definition. Returns scheduling configuration and metadata.
+      parameters:
+        - name: reportDefinitionId
+          in: query
+          required: true
+          description: Unique identifier (UUID) of the report definition
+          schema:
+            type: string
+            format: uuid
+            example: "4fdbd9ef-c518-4716-82e5-85653e65a91b"
+      responses:
+        '200':
+          description: Successful response with paginated report schedules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSchedulesResponse'
+
+components:
+  schemas:
+    WidgetReactionAggregatesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of widget reaction aggregates
+          items:
+            $ref: '#/components/schemas/WidgetReactionAggregate'
+        success:
+          type: boolean
+          description: Indicates if the API call was successful
+          example: true
+
+    WidgetReactionAggregate:
+      type: object
+      properties:
+        widgetName:
+          type: string
+          description: |
+            Name of the widget. Common widgets include:
+            - KpiEarlyAtrritionCount: Early attrition KPI
+            - KpiExitedEmployeeCount: Exited employee count KPI
+            - KpiOverallAttritionRate: Overall attrition rate KPI
+            - KpiVoluntaryAttritionCount: Voluntary attrition count KPI
+            - OrgAttritionDepartmentWise: Attrition by department
+            - OrgAttritionExitReason: Attrition by exit reason
+            - OrgAttritionOrganisationTenure: Attrition by tenure
+            - OrgAttritionOverallExitRatings: Attrition by exit ratings
+            - OrgAttritionPerformanceWise: Attrition by performance
+          example: "KpiEarlyAtrritionCount"
+        reactionAggregateId:
+          type: string
+          format: uuid
+          description: Unique identifier for the reaction aggregate
+          example: "ee592152-96ca-434e-9e33-7a22dab33849"
+
+    ReportSchedulesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of report schedules
+          items:
+            $ref: '#/components/schemas/ReportSchedule'
+        currentPage:
+          type: integer
+          description: Current page number (1-indexed)
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items per page
+          example: 100
+        totalCount:
+          type: integer
+          description: Total number of report schedules matching the query
+          example: 0
+        totalPages:
+          type: integer
+          description: Total number of pages available
+          example: 0
+        success:
+          type: boolean
+          description: Indicates if the API call was successful
+          example: true
+
+    ReportSchedule:
+      type: object
+      description: |
+        Represents a scheduled report configuration. The exact structure
+        depends on the report type and scheduling options configured.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the report schedule
+        reportDefinitionId:
+          type: string
+          format: uuid
+          description: Reference to the report definition this schedule belongs to
+        scheduleName:
+          type: string
+          description: Human-readable name for the schedule
+        frequency:
+          type: string
+          description: Scheduling frequency (e.g., daily, weekly, monthly)
+        isActive:
+          type: boolean
+          description: Whether the schedule is currently active
+        recipients:
+          type: array
+          description: List of email recipients for the scheduled report
+          items:
+            type: string
+            format: email
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the schedule was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the schedule was last updated

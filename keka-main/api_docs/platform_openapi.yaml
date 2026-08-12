@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: Keka Platform API
+  description: API endpoints for Keka HR Platform - Employee Management
+  version: 1.0.0
+
+paths:
+  /platform/api/v1/employees/{employeeId}:
+    get:
+      operationId: getEmployeeById
+      summary: Retrieve detailed information for a specific employee
+      description: |
+        Fetches comprehensive employee details including personal information,
+        employment status, group memberships, and legal entity details.
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          description: Unique identifier (UUID) of the employee
+          schema:
+            type: string
+            format: uuid
+            example: "646924c3-15a2-4e7e-b348-a2f1b8de7fd3"
+      responses:
+        '200':
+          description: Successful response with employee details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+
+components:
+  schemas:
+    EmployeeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Employee'
+        success:
+          type: boolean
+          description: Indicates if the API call was successful
+          example: true
+
+    Employee:
+      type: object
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+          description: Unique identifier of the employee
+          example: "646924c3-15a2-4e7e-b348-a2f1b8de7fd3"
+        fullName:
+          type: string
+          description: Full name of the employee
+          example: "Sripathi Krishnan"
+        displayName:
+          type: string
+          description: Display name of the employee
+          example: "Sripathi Krishnan"
+        email:
+          type: string
+          format: email
+          description: Email address of the employee
+          example: "sripathi@think41.com"
+        mobilePhone:
+          type: string
+          description: Mobile phone number of the employee
+          example: "9986650980"
+        employeeNumber:
+          type: string
+          description: Employee number/ID within the organization
+          example: "T0001"
+        employmentStatus:
+          type: integer
+          description: Employment status code (0 = Active)
+          example: 0
+        dateJoined:
+          type: string
+          format: date
+          description: Date when the employee joined the organization
+          example: "2024-06-05"
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth of the employee
+          example: "1982-08-28"
+        gender:
+          type: integer
+          description: Gender code (1 = Male, 2 = Female)
+          example: 1
+        workerType:
+          type: integer
+          description: Type of worker (1 = Full-time)
+          example: 1
+        departmentId:
+          type: string
+          format: uuid
+          description: UUID of the department the employee belongs to
+          example: "7cf3ce0f-0a83-4472-8568-e5781ee3b486"
+        groups:
+          type: array
+          description: List of groups the employee belongs to
+          items:
+            $ref: '#/components/schemas/EmployeeGroup'
+        legalEntityDetails:
+          $ref: '#/components/schemas/LegalEntityDetails'
+        reporteeCount:
+          type: integer
+          description: Number of employees reporting to this employee
+          example: 0
+
+    EmployeeGroup:
+      type: object
+      properties:
+        groupId:
+          type: string
+          format: uuid
+          description: Unique identifier of the group
+          example: "7cf3ce0f-0a83-4472-8568-e5781ee3b486"
+        name:
+          type: string
+          description: Name of the group
+          example: "Founders"
+        groupType:
+          type: integer
+          description: |
+            Type of group:
+            - 0: Job Title
+            - 1: Business Unit
+            - 2: Department
+            - 3: Location
+            - 5: Pay Group
+            - 9: Legal Entity
+          example: 2
+
+    LegalEntityDetails:
+      type: object
+      properties:
+        legalEntityId:
+          type: integer
+          description: Internal ID of the legal entity
+          example: 69176
+        companyDetails:
+          $ref: '#/components/schemas/CompanyDetails'
+
+    CompanyDetails:
+      type: object
+      properties:
+        legalName:
+          type: string
+          description: Legal name of the company
+          example: "Think41 Technologies Private Limited"
+        companyId:
+          type: string
+          description: Company registration ID (CIN for Indian companies)
+          example: "U62099KA2024PTC189390"
+        registrationDate:
+          type: string
+          format: date
+          description: Date of company registration
+          example: "2024-06-04"
+        currency:
+          $ref: '#/components/schemas/Currency'
+
+    Currency:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Internal currency ID
+          example: 1
+        code:
+          type: string
+          description: ISO 4217 currency code
+          example: "INR"
+        name:
+          type: string
+          description: Name of the currency
+          example: "India Rupee"

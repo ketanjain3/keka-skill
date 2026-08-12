@@ -1,0 +1,1354 @@
+openapi: 3.0.3
+info:
+  title: Keka Timesheet API
+  description: API endpoints for the Timesheet module in Keka HR software, including project management, time tracking, and PSA (Professional Services Automation) features.
+  version: 1.0.0
+
+servers:
+  - url: https://{tenant}.keka.com/k/timesheet/api
+    variables:
+      tenant:
+        default: demo
+        description: Tenant subdomain
+
+paths:
+  /myteamemployees/timesheet/employeeviewlookup:
+    get:
+      operationId: getMyTeamEmployeeViewLookup
+      summary: Get employee view lookup options for team timesheets
+      tags:
+        - My Team Timesheets
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LookupItem'
+
+  /myteamemployees/timesheet/projectviewlookup:
+    get:
+      operationId: getMyTeamProjectViewLookup
+      summary: Get project view lookup options for team timesheets
+      tags:
+        - My Team Timesheets
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LookupItem'
+
+  /myteamemployees/timesheet/projectclientlookup:
+    get:
+      operationId: getMyTeamProjectClientLookup
+      summary: Get project and client lookup data for team timesheets
+      tags:
+        - My Team Timesheets
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProjectClientLookup'
+
+  /myteamemployees/timesheet/project/{projectId}/timedetails:
+    get:
+      operationId: getMyTeamProjectTimeDetails
+      summary: Get time details for a specific project within a date range
+      tags:
+        - My Team Timesheets
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The unique identifier of the project
+          schema:
+            type: integer
+            example: 226134
+        - name: startdate
+          in: query
+          required: true
+          description: Start date for the time range (YYYY-MM-DD format)
+          schema:
+            type: string
+            format: date
+            example: "2025-12-15"
+        - name: endDate
+          in: query
+          required: true
+          description: End date for the time range (YYYY-MM-DD format)
+          schema:
+            type: string
+            format: date
+            example: "2026-01-11"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProjectTimeDetail'
+
+  /myteamemployees/timesheet/weektimesummary:
+    get:
+      operationId: getMyTeamWeekTimeSummary
+      summary: Get weekly time summary for team employees
+      tags:
+        - My Team Timesheets
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date of the week range (YYYY-MM-DD format)
+          schema:
+            type: string
+            format: date
+            example: "2025-12-29"
+        - name: toDate
+          in: query
+          required: true
+          description: End date of the week range (YYYY-MM-DD format)
+          schema:
+            type: string
+            format: date
+            example: "2026-01-11"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/WeekTimeSummary'
+
+  /timesheet/pendingapprovalcount:
+    get:
+      operationId: getPendingApprovalCount
+      summary: Get counts of pending timesheet and related approvals
+      tags:
+        - Timesheet Approvals
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PendingApprovalCount'
+
+  /timesheet/resourcesettings:
+    get:
+      operationId: getResourceSettings
+      summary: Get resource allocation and request settings configuration
+      tags:
+        - Timesheet Settings
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ResourceSettings'
+
+  /psa/analytics/settings/currencycode:
+    get:
+      operationId: getPsaAnalyticsCurrencyCode
+      summary: Get the default currency code for PSA analytics
+      tags:
+        - PSA Analytics
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: string
+                        description: Currency code (e.g., USD, INR)
+                        example: "USD"
+
+  /timesheet/dashboard/timesheetdetails:
+    get:
+      operationId: getTimesheetDashboardDetails
+      summary: Get timesheet dashboard summary with counts for clients, projects, and approvals
+      tags:
+        - Timesheet Dashboard
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TimesheetDashboardDetails'
+
+  /CeoDashboard/projectstats:
+    get:
+      operationId: getCeoDashboardProjectStats
+      summary: Get project financial statistics for CEO dashboard
+      tags:
+        - CEO Dashboard
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ProjectStats'
+
+  /CeoDashboard/projectUnsubmittedTimesheet:
+    get:
+      operationId: getCeoDashboardUnsubmittedTimesheets
+      summary: Get list of employees with unsubmitted timesheets for CEO dashboard
+      tags:
+        - CEO Dashboard
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UnsubmittedTimesheetEmployee'
+
+  /lookup/clientmanagers:
+    get:
+      operationId: getClientManagersLookup
+      summary: Get lookup list of client managers
+      tags:
+        - Lookups
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ClientManagerLookup'
+
+  /client/all:
+    get:
+      operationId: getAllClients
+      summary: Get all clients with their project counts and managers
+      tags:
+        - Clients
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Client'
+
+  /psa/projectconversionrequest/count:
+    get:
+      operationId: getPsaProjectConversionRequestCount
+      summary: Get count of pending project conversion requests
+      tags:
+        - PSA Project Conversion
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: integer
+                        description: Count of pending conversion requests
+                        example: 0
+
+  /project/customattributes/{attributeId}/projecttype/{projectTypeId}:
+    get:
+      operationId: getProjectCustomAttributes
+      summary: Get custom attributes configuration for a project type
+      tags:
+        - Projects
+      parameters:
+        - name: attributeId
+          in: path
+          required: true
+          description: The custom attribute identifier
+          schema:
+            type: integer
+            example: 4
+        - name: projectTypeId
+          in: path
+          required: true
+          description: The project type identifier
+          schema:
+            type: integer
+            example: 4
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CustomAttributeConfig'
+
+  /ps/project/activeprojects:
+    get:
+      operationId: getPsActiveProjects
+      summary: Get list of all active projects with full details
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Project'
+
+  /project/clientlookups:
+    get:
+      operationId: getProjectClientLookups
+      summary: Get client lookup data for project creation and filtering
+      tags:
+        - Lookups
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ClientLookupDetail'
+
+  /project/activeprojectsprojectmanagers:
+    get:
+      operationId: getActiveProjectsProjectManagers
+      summary: Get project managers for all active projects
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProjectManagerMapping'
+
+  /psa/customview/columnidentifiers/{viewType}:
+    get:
+      operationId: getPsaCustomViewColumnIdentifiers
+      summary: Get available column identifiers for PSA custom views
+      tags:
+        - PSA Custom Views
+      parameters:
+        - name: viewType
+          in: path
+          required: true
+          description: The type of view (0 for projects)
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        additionalProperties:
+                          type: string
+                        description: Map of column identifiers to display names
+                        example:
+                          "0": "Project"
+                          "1": "Client"
+                          "2": "BillingType"
+
+  /psa/customview/{viewType}:
+    get:
+      operationId: getPsaCustomViews
+      summary: Get saved custom views for PSA module
+      tags:
+        - PSA Custom Views
+      parameters:
+        - name: viewType
+          in: path
+          required: true
+          description: The type of view (0 for projects)
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CustomView'
+
+  /psa/customview/summarydatapoints/{viewType}:
+    get:
+      operationId: getPsaCustomViewSummaryDatapoints
+      summary: Get summary data points for projects including billable and non-billable time
+      tags:
+        - PSA Custom Views
+      parameters:
+        - name: viewType
+          in: path
+          required: true
+          description: The type of view (0 for projects)
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProjectSummaryDatapoint'
+
+  /ps/project/allprojects:
+    get:
+      operationId: getPsAllProjects
+      summary: Get all projects including active and archived
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Project'
+
+  /ps/project/archivedprojects:
+    get:
+      operationId: getPsArchivedProjects
+      summary: Get list of archived projects
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ArchivedProject'
+
+  /psa/opportunity/clientlookup:
+    get:
+      operationId: getPsaOpportunityClientLookup
+      summary: Get client lookup data for creating opportunities
+      tags:
+        - PSA Opportunities
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OpportunityClientLookup'
+
+  /psa/projectconversionrequest/pending:
+    get:
+      operationId: getPsaPendingProjectConversionRequests
+      summary: Get list of pending project conversion requests
+      tags:
+        - PSA Project Conversion
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProjectConversionRequest'
+
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        succeeded:
+          type: boolean
+          description: Indicates if the request was successful
+        message:
+          type: string
+          description: Optional message from the server
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of error messages if any
+
+    LookupItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier
+        name:
+          type: string
+          description: Display name
+        code:
+          type: string
+          description: Short code
+
+    ProjectClientLookup:
+      type: object
+      properties:
+        projectId:
+          type: integer
+          description: Unique identifier of the project
+          example: 226134
+        projectName:
+          type: string
+          description: Name of the project
+          example: "Atomicwork Integration"
+        projectCode:
+          type: string
+          description: Short code for the project
+          example: "AW-INTEGRATION"
+        clientId:
+          type: integer
+          description: Unique identifier of the client
+          example: 226126
+        clientName:
+          type: string
+          description: Name of the client
+          example: "Atomicwork"
+
+    ProjectTimeDetail:
+      type: object
+      properties:
+        employeeId:
+          type: integer
+          description: Unique identifier of the employee
+        employeeName:
+          type: string
+          description: Name of the employee
+        date:
+          type: string
+          format: date
+          description: Date of the time entry
+        minutes:
+          type: integer
+          description: Number of minutes logged
+        isBillable:
+          type: boolean
+          description: Whether the time is billable
+
+    WeekTimeSummary:
+      type: object
+      properties:
+        employeeId:
+          type: integer
+          description: Unique identifier of the employee
+          example: 219245
+        employeeName:
+          type: string
+          description: Name of the employee
+          example: "Aniket"
+        timesheetCount:
+          type: integer
+          description: Number of timesheet entries
+          example: 1
+        totalBillableMinutes:
+          type: integer
+          description: Total billable time in minutes
+          example: 2700
+        totalNonBillableMinutes:
+          type: integer
+          description: Total non-billable time in minutes
+          example: 0
+        totalMinutes:
+          type: integer
+          description: Total time logged in minutes
+          example: 2700
+
+    PendingApprovalCount:
+      type: object
+      properties:
+        pendingTimesheetApprovalsCount:
+          type: integer
+          description: Number of timesheets pending approval
+          example: 50
+        emptyTimesheetApprovalsCount:
+          type: integer
+          description: Number of empty timesheets pending approval
+          example: 4
+        pendingTaskRequestsCount:
+          type: integer
+          description: Number of task requests pending approval
+          example: 0
+        pendingProjectRequestsCount:
+          type: integer
+          description: Number of project requests pending approval
+          example: 0
+        pendingOpportunityRequestsCount:
+          type: integer
+          description: Number of opportunity requests pending approval
+          example: 0
+        pendingResourceRequestsCount:
+          type: integer
+          description: Number of resource requests pending approval
+          example: 0
+        pendingChargeRequestsCount:
+          type: integer
+          description: Number of charge requests pending approval
+          example: 0
+        pendingApproverTimesheetCount:
+          type: integer
+          description: Number of approver timesheets pending
+          example: 0
+
+    ResourceSettings:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Settings identifier
+        hoursAllocationPerDay:
+          type: number
+          format: float
+          description: Default hours allocation per day
+          example: 9.0
+        excludedDepartments:
+          type: array
+          items:
+            type: integer
+          description: List of excluded department IDs
+        excludedJobTitles:
+          type: array
+          items:
+            type: integer
+          description: List of excluded job title IDs
+        weeklyOffDays:
+          type: array
+          items:
+            type: integer
+          description: Days of week that are off (0=Sunday, 6=Saturday)
+          example: [0, 6]
+        considerNoProjectAsBench:
+          type: boolean
+          description: Whether to consider employees with no project as bench
+        considerNonBillableProjectAsBench:
+          type: boolean
+          description: Whether to consider non-billable project assignments as bench
+        considerNonBillableAllocationAsBench:
+          type: boolean
+          description: Whether to consider non-billable allocations as bench
+        requestSettings:
+          $ref: '#/components/schemas/RequestSettings'
+        allocationSettings:
+          $ref: '#/components/schemas/AllocationSettings'
+
+    RequestSettings:
+      type: object
+      properties:
+        criticalRequestThresholdDays:
+          type: integer
+          description: Days threshold for critical requests
+          example: 10
+        resourceRequestSource:
+          type: integer
+          description: Source type for resource requests
+        resourceRequestFor:
+          type: integer
+          description: Target type for resource requests
+
+    AllocationSettings:
+      type: object
+      properties:
+        jobTitleMatchRating:
+          type: integer
+          description: Weight for job title matching
+        skillMatchRating:
+          type: integer
+          description: Weight for skill matching
+        availabilityMatchRating:
+          type: integer
+          description: Weight for availability matching
+        businessUnitMatchRating:
+          type: integer
+          description: Weight for business unit matching
+        departmentMatchRating:
+          type: integer
+          description: Weight for department matching
+        experienceMatchRating:
+          type: integer
+          description: Weight for experience matching
+        shouldMatchJobTitle:
+          type: boolean
+        shouldMatchSkill:
+          type: boolean
+        shouldMatchAvailability:
+          type: boolean
+        shouldMatchDepartment:
+          type: boolean
+        shouldMatchBusinessUnit:
+          type: boolean
+        shouldMatchExperience:
+          type: boolean
+        canOverAllocate:
+          type: boolean
+          description: Whether over-allocation is allowed
+        resourceAllocationType:
+          type: integer
+          description: Type of resource allocation
+        canAllocateNonBillableResourceToBillableProject:
+          type: boolean
+          description: Whether non-billable resources can be allocated to billable projects
+
+    TimesheetDashboardDetails:
+      type: object
+      properties:
+        clientsCount:
+          type: integer
+          description: Total number of clients
+          example: 12
+        archivedProjectsCount:
+          type: integer
+          description: Number of archived projects
+          example: 2
+        activeProjectsCount:
+          type: integer
+          description: Number of active projects
+          example: 26
+        pendingApproval:
+          type: integer
+          description: Number of timesheets pending approval
+          example: 54
+        notSubmitted:
+          type: integer
+          description: Number of timesheets not submitted
+          example: 850
+        notAllotted:
+          type: integer
+          description: Number of employees not allotted to projects
+          example: 4
+        opportunityCount:
+          type: integer
+          description: Number of opportunities
+          example: 1
+
+    ProjectStats:
+      type: object
+      properties:
+        estimatedBillingAmount:
+          type: number
+          format: float
+          description: Total estimated billing amount
+          example: 0.0
+        estimatedCost:
+          type: number
+          format: float
+          description: Total estimated cost
+          example: 0.0
+        estimatedGrossProfit:
+          type: number
+          format: float
+          description: Estimated gross profit
+          example: 0.0
+        invoicedRevenue:
+          type: number
+          format: float
+          description: Total invoiced revenue
+          example: 0.0
+
+    UnsubmittedTimesheetEmployee:
+      type: object
+      properties:
+        unsubmittedTimesheetCount:
+          type: integer
+          description: Number of unsubmitted timesheets
+          example: 6
+        employeeId:
+          type: integer
+          description: Unique identifier of the employee
+          example: 217154
+        displayName:
+          type: string
+          description: Display name of the employee
+          example: "Himanshu Varshney"
+        profileImageUrl:
+          type: string
+          nullable: true
+          description: URL to the employee's profile image
+        jobTitle:
+          type: string
+          description: Job title of the employee
+          example: "Co-Founder"
+
+    ClientManagerLookup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Employee ID of the client manager
+          example: 241437
+        projectId:
+          type: integer
+          description: Associated project ID (0 if not project-specific)
+        identifier:
+          type: string
+          nullable: true
+          description: Unique identifier
+        code:
+          type: string
+          nullable: true
+          description: Short code
+        name:
+          type: string
+          description: Name of the client manager
+          example: "Anusha Aravapalli"
+        description:
+          type: string
+          nullable: true
+        isDefault:
+          type: boolean
+          description: Whether this is the default option
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the client
+          example: 226126
+        name:
+          type: string
+          description: Name of the client
+          example: "Atomicwork"
+        code:
+          type: string
+          description: Short code for the client
+          example: "AW"
+        projectCount:
+          type: integer
+          description: Number of projects for this client
+          example: 4
+        currencyCode:
+          type: string
+          description: Billing currency code
+          example: "USD"
+        clientManagers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientManager'
+
+    ClientManager:
+      type: object
+      properties:
+        clientId:
+          type: integer
+          description: ID of the client
+        clientManagerId:
+          type: integer
+          description: Employee ID of the client manager
+        clientManagerName:
+          type: string
+          description: Name of the client manager
+
+    CustomAttributeConfig:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Attribute configuration ID
+        identifier:
+          type: string
+          nullable: true
+          description: Unique identifier
+        sections:
+          type: array
+          items:
+            type: object
+          description: Configuration sections
+        dbStoreViewName:
+          type: string
+          nullable: true
+          description: Database store view name
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the project
+          example: 226134
+        name:
+          type: string
+          description: Name of the project
+          example: "Atomicwork Integration"
+        code:
+          type: string
+          description: Short code for the project
+          example: "AW-INTEGRATION"
+        startDate:
+          type: string
+          format: date
+          description: Project start date
+          example: "2025-05-02"
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          description: Project end date (null if ongoing)
+        overallBudget:
+          type: number
+          format: float
+          nullable: true
+          description: Total budget for the project
+        budgetedTime:
+          type: number
+          nullable: true
+          description: Budgeted time in hours
+        clientId:
+          type: integer
+          description: ID of the associated client
+        clientName:
+          type: string
+          description: Name of the associated client
+        status:
+          type: integer
+          description: Project status (0=Active, 1=Archived)
+        isBillable:
+          type: boolean
+          description: Whether the project is billable
+        billingType:
+          type: integer
+          description: Type of billing (0=None, 1=Fixed, 2=Time&Material)
+        projectManagers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectManager'
+        createdOn:
+          type: string
+          format: date
+          description: Date the project was created
+        groupId:
+          type: integer
+          nullable: true
+          description: Group ID if part of a project group
+        clientManagers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientManager'
+        attributes:
+          type: object
+          additionalProperties: true
+          description: Custom attributes
+
+    ProjectManager:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Employee ID of the project manager
+        name:
+          type: string
+          description: Name of the project manager
+        email:
+          type: string
+          format: email
+          description: Email of the project manager
+        profileImageUrl:
+          type: string
+          nullable: true
+          description: URL to profile image
+        projectId:
+          type: integer
+          description: Associated project ID
+        jobTitle:
+          type: string
+          description: Job title
+        canManageTasks:
+          type: boolean
+          description: Permission to manage tasks
+        canManageTeam:
+          type: boolean
+          description: Permission to manage team
+
+    ClientLookupDetail:
+      type: object
+      properties:
+        parentGroupId:
+          type: integer
+          description: Parent group ID
+        systemGroupType:
+          type: integer
+          description: System group type
+        isEmployeeAssignmentRequired:
+          type: boolean
+        isArchived:
+          type: boolean
+        hasHierarchy:
+          type: boolean
+        countryCode:
+          type: string
+          nullable: true
+        groupTypeId:
+          type: integer
+        id:
+          type: integer
+          description: Client ID
+        projectId:
+          type: integer
+        identifier:
+          type: string
+          description: Unique identifier (UUID)
+        code:
+          type: string
+          description: Client code
+        name:
+          type: string
+          description: Client name
+        description:
+          type: string
+          nullable: true
+        isDefault:
+          type: boolean
+
+    ProjectManagerMapping:
+      type: object
+      properties:
+        employeeId:
+          type: integer
+          description: Employee ID of the project manager
+        employeeName:
+          type: string
+          description: Name of the project manager
+        projectId:
+          type: integer
+          description: ID of the project
+        clientId:
+          type: integer
+          description: ID of the associated client
+
+    CustomView:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: View ID
+        name:
+          type: string
+          description: View name
+        columns:
+          type: array
+          items:
+            type: integer
+          description: Selected column identifiers
+        filters:
+          type: object
+          description: Applied filters
+
+    ProjectSummaryDatapoint:
+      type: object
+      properties:
+        projectId:
+          type: integer
+          description: Project ID
+          example: 226134
+        billableMinutes:
+          type: number
+          format: float
+          description: Total billable minutes logged
+          example: 173835.0
+        nonBillableMinutes:
+          type: number
+          format: float
+          description: Total non-billable minutes logged
+          example: 0.0
+        totalMinutesLogged:
+          type: number
+          format: float
+          description: Total minutes logged
+          example: 173835.0
+        totalBudget:
+          type: number
+          format: float
+          nullable: true
+          description: Total budget if set
+        currencyCode:
+          type: string
+          description: Currency code for the project
+          example: "USD"
+
+    ArchivedProject:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Project ID
+        name:
+          type: string
+          description: Project name
+        code:
+          type: string
+          description: Project code
+        billingType:
+          type: integer
+          description: Billing type
+        clientId:
+          type: integer
+        clientName:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        overallBudget:
+          type: number
+          nullable: true
+        budgetedTime:
+          type: number
+          nullable: true
+        archivedBy:
+          type: string
+          description: Name of person who archived the project
+        archivedOn:
+          type: string
+          format: date-time
+          description: When the project was archived
+        archiveReason:
+          type: string
+          description: Reason for archiving
+        groupId:
+          type: integer
+          nullable: true
+        clientManagers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientManager'
+        attributes:
+          type: object
+          additionalProperties: true
+
+    OpportunityClientLookup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Client ID
+          example: 226126
+        identifier:
+          type: string
+          description: Unique identifier (UUID)
+        name:
+          type: string
+          description: Client name
+          example: "Atomicwork"
+        code:
+          type: string
+          description: Client code
+          example: "AW"
+        billingCurrencyCode:
+          type: string
+          description: Billing currency
+          example: "USD"
+        countryCode:
+          type: string
+          description: Country code
+          example: "US"
+
+    ProjectConversionRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Request ID
+        opportunityId:
+          type: integer
+          description: Source opportunity ID
+        opportunityName:
+          type: string
+          description: Name of the opportunity
+        requestedBy:
+          type: string
+          description: Name of the requester
+        requestedOn:
+          type: string
+          format: date-time
+          description: When the request was made
+        status:
+          type: integer
+          description: Request status
+
+tags:
+  - name: My Team Timesheets
+    description: APIs for managing team employee timesheets
+  - name: Timesheet Approvals
+    description: APIs for timesheet approval workflows
+  - name: Timesheet Settings
+    description: APIs for timesheet configuration and settings
+  - name: Timesheet Dashboard
+    description: APIs for timesheet dashboard data
+  - name: CEO Dashboard
+    description: APIs for executive-level dashboard views
+  - name: PSA Analytics
+    description: APIs for Professional Services Automation analytics
+  - name: PSA Custom Views
+    description: APIs for PSA custom view management
+  - name: PSA Opportunities
+    description: APIs for managing PSA opportunities
+  - name: PSA Project Conversion
+    description: APIs for converting opportunities to projects
+  - name: Clients
+    description: APIs for client management
+  - name: Projects
+    description: APIs for project management
+  - name: Lookups
+    description: APIs for lookup data and dropdowns

@@ -1,0 +1,1019 @@
+openapi: 3.0.3
+info:
+  title: Keka Leave API
+  description: API endpoints for the Keka Leave module (leave management, approvals, leave plans)
+  version: 1.0.0
+
+paths:
+  /leave/api/leaves/yearendprocess/active:
+    get:
+      operationId: getActiveYearEndProcesses
+      summary: Retrieve active year-end leave processing records
+      tags:
+        - Year End Processing
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YearEndProcessListResponse'
+
+  /leave/api/myteam/summary/{employeeId}/teamleavecalendar:
+    get:
+      operationId: getTeamLeaveCalendar
+      summary: Retrieve team leave calendar for a specific employee's team
+      tags:
+        - My Team
+      parameters:
+        - name: employeeId
+          in: path
+          description: The employee ID whose team calendar to retrieve
+          required: true
+          schema:
+            type: integer
+        - name: fromDate
+          in: query
+          description: Start date for the calendar period (YYYY-MM-DD)
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: End date for the calendar period (YYYY-MM-DD)
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: groupId
+          in: query
+          description: Filter by group ID (0 for all groups)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: systemGroupType
+          in: query
+          description: Filter by system group type (0 for all)
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamLeaveCalendarResponse'
+
+  /leave/api/myteam/summary/{employeeId}/teamonleave:
+    get:
+      operationId: getTeamOnLeave
+      summary: Retrieve team members currently on leave
+      tags:
+        - My Team
+      parameters:
+        - name: employeeId
+          in: path
+          description: The employee ID whose team to retrieve
+          required: true
+          schema:
+            type: integer
+        - name: fromDate
+          in: query
+          description: Start date for the leave period (YYYY-MM-DD)
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: End date for the leave period (YYYY-MM-DD)
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: groupId
+          in: query
+          description: Filter by group ID (0 for all groups)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: systemGroupType
+          in: query
+          description: Filter by system group type (0 for all)
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamOnLeaveResponse'
+
+  /leave/api/CeoDashboard/employeesonleave:
+    get:
+      operationId: getCeoDashboardEmployeesOnLeave
+      summary: Retrieve employees on leave for CEO dashboard view
+      tags:
+        - CEO Dashboard
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeesOnLeaveResponse'
+
+  /leave/api/lookup/leavetypes:
+    get:
+      operationId: getLeaveTypes
+      summary: Retrieve all available leave types
+      tags:
+        - Lookup
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveTypesResponse'
+
+  /leave/api/leave/approval/pendingleaverequests:
+    get:
+      operationId: getPendingLeaveRequests
+      summary: Retrieve pending leave requests awaiting approval
+      tags:
+        - Approvals
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingLeaveRequestsResponse'
+
+  /leave/api/leave/approval/encashmentrequest/pending:
+    get:
+      operationId: getPendingEncashmentRequests
+      summary: Retrieve pending leave encashment requests awaiting approval
+      tags:
+        - Approvals
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncashmentRequestsResponse'
+
+  /leave/api/leave/approval/encashmentrequest/past:
+    get:
+      operationId: getPastEncashmentRequests
+      summary: Retrieve past leave encashment requests (processed)
+      tags:
+        - Approvals
+      parameters:
+        - name: fromDate
+          in: query
+          description: Start date for the query period (YYYY-MM-DD)
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: End date for the query period (YYYY-MM-DD)
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncashmentRequestsResponse'
+
+  /leave/api/leave/approval/pendingcompoffrequests:
+    get:
+      operationId: getPendingCompOffRequests
+      summary: Retrieve pending compensatory off requests awaiting approval
+      tags:
+        - Approvals
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompOffRequestsResponse'
+
+  /leave/api/leaves/settings/leaveplan/all:
+    get:
+      operationId: getAllLeavePlans
+      summary: Retrieve all leave plans
+      tags:
+        - Leave Plans
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeavePlanListResponse'
+
+  /leave/api/leaves/settings/leaveplan/{leavePlanId}:
+    get:
+      operationId: getLeavePlanById
+      summary: Retrieve a specific leave plan by ID
+      tags:
+        - Leave Plans
+      parameters:
+        - name: leavePlanId
+          in: path
+          description: The leave plan ID (e.g., 3057, 3058)
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeavePlanResponse'
+
+  /leave/api/leaves/settings/leavetypenames:
+    get:
+      operationId: getLeaveTypeNames
+      summary: Retrieve mapping of leave type IDs to names
+      tags:
+        - Lookup
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveTypeNamesResponse'
+
+components:
+  schemas:
+    StandardResponse:
+      type: object
+      properties:
+        data:
+          description: Response data (varies by endpoint)
+        succeeded:
+          type: boolean
+          description: Indicates whether the request was successful
+        message:
+          type: string
+          description: Response message (usually empty on success)
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of error messages (empty on success)
+      required:
+        - succeeded
+        - message
+        - errors
+
+    YearEndProcessListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/YearEndProcess'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    YearEndProcess:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Year end process ID
+        leavePlanId:
+          type: integer
+          description: Associated leave plan ID
+        leavePlanName:
+          type: string
+          description: Name of the leave plan
+        employeesCount:
+          type: integer
+          description: Number of employees affected
+        isReadyToProcess:
+          type: boolean
+          description: Whether the year-end process is ready to run
+        yearEndDate:
+          type: string
+          format: date-time
+          description: Year end date
+        yearEndProcessingAvailableDate:
+          type: string
+          description: Human-readable date when processing becomes available
+        month:
+          type: integer
+          description: Month of year end (1-12)
+        year:
+          type: integer
+          description: Year
+        processedOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the process was executed
+        initiatedOn:
+          type: string
+          format: date-time
+          description: When the process was initiated
+        initiatedBy:
+          type: integer
+          description: Employee ID who initiated the process
+        lastModifiedBy:
+          type: integer
+          description: Employee ID who last modified
+        lastModifiedOn:
+          type: string
+          format: date-time
+          description: Last modification timestamp
+        status:
+          type: integer
+          description: Process status code
+        employeeId:
+          type: integer
+          description: Related employee ID
+        processedFor:
+          type: string
+          nullable: true
+          description: Description of who the process was run for
+
+    TeamLeaveCalendarResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamLeaveCalendarEntry'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    TeamLeaveCalendarEntry:
+      type: object
+      description: Team leave calendar entry (structure depends on actual data)
+
+    TeamOnLeaveResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeOnLeave'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    EmployeesOnLeaveResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeOnLeave'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    EmployeeOnLeave:
+      type: object
+      properties:
+        employeeId:
+          type: integer
+          description: Employee ID
+        displayName:
+          type: string
+          description: Employee display name
+        profileImageUrl:
+          type: string
+          nullable: true
+          description: URL to profile image
+        jobTitle:
+          type: string
+          description: Employee job title
+        fromDate:
+          type: string
+          format: date
+          description: Leave start date (YYYY-MM-DD)
+        toDate:
+          type: string
+          format: date
+          description: Leave end date (YYYY-MM-DD)
+        fromSession:
+          type: integer
+          description: Starting session (0=first half, 1=second half)
+        toSession:
+          type: integer
+          description: Ending session (0=first half, 1=second half)
+        isHourlyLeave:
+          type: boolean
+          description: Whether this is hourly leave
+        status:
+          type: integer
+          description: Leave status code
+        totalLeaveDuration:
+          $ref: '#/components/schemas/LeaveDuration'
+
+    LeaveDuration:
+      type: object
+      properties:
+        unit:
+          type: integer
+          description: Duration unit (2=days)
+        duration:
+          type: number
+          description: Numeric duration value
+        durationString:
+          type: string
+          description: Human-readable duration string (e.g., "2 days")
+
+    LeaveTypesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaveType'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    LeaveType:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Leave type ID
+        projectId:
+          type: integer
+          description: Associated project ID
+        identifier:
+          type: string
+          format: uuid
+          description: Unique identifier (UUID)
+        code:
+          type: string
+          description: Short code (e.g., SL, EL, CL)
+        name:
+          type: string
+          description: Leave type name (e.g., Sick Leave, Earned Leave)
+        description:
+          type: string
+          nullable: true
+          description: Detailed description of the leave type
+        isDefault:
+          type: boolean
+          description: Whether this is a default leave type
+
+    PendingLeaveRequestsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaveRequest'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    LeaveRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Leave request ID
+        employeeId:
+          type: integer
+          description: Employee ID who requested leave
+        fullName:
+          type: string
+          description: Full name of employee
+        displayName:
+          type: string
+          description: Display name of employee
+        employeeNumber:
+          type: string
+          description: Employee number
+        employmentStatus:
+          type: integer
+          description: Employment status code
+        profileImageUrl:
+          type: string
+          nullable: true
+          description: URL to profile image
+        requesterId:
+          type: integer
+          description: ID of requester
+        requesterDisplayName:
+          type: string
+          description: Display name of requester
+        requesterProfileImageUrl:
+          type: string
+          nullable: true
+          description: Requester profile image URL
+        teamCount:
+          type: integer
+          description: Team member count
+        approverId:
+          type: integer
+          description: Approver employee ID
+        reportingTo:
+          type: integer
+          description: Reporting manager employee ID
+        approvers:
+          type: string
+          description: Comma-separated list of approvers
+        approvedBy:
+          type: string
+          description: Name of employee who approved
+        actionTakenOn:
+          type: string
+          format: date-time
+          description: When action was taken
+        isConsumed:
+          type: boolean
+          description: Whether leave has been consumed
+        leaveTypes:
+          type: string
+          description: Leave types applied for
+        totalDuration:
+          $ref: '#/components/schemas/LeaveDuration'
+        timingPolicyName:
+          type: string
+          nullable: true
+          description: Associated timing policy name
+        requestedOn:
+          type: string
+          format: date-time
+          description: When leave was requested
+        jobTitle:
+          type: string
+          description: Employee job title
+        orgLocation:
+          type: string
+          description: Organization location
+        department:
+          type: string
+          description: Department name
+        parentDepartmentName:
+          type: string
+          nullable: true
+          description: Parent department name
+        businessUnitName:
+          type: string
+          description: Business unit name
+        legalEntityName:
+          type: string
+          description: Legal entity name
+        fromDate:
+          type: string
+          format: date
+          description: Leave start date
+        toDate:
+          type: string
+          format: date
+          description: Leave end date
+        fromSession:
+          type: integer
+          description: Starting session
+        toSession:
+          type: integer
+          description: Ending session
+        availSpecialLeave:
+          type: boolean
+          description: Whether special leave is available
+        availFloaterLeave:
+          type: boolean
+          description: Whether floater leave is available
+        isNextYearLeaveWithCurrentBalance:
+          type: boolean
+          description: Whether this uses next year balance
+        creatingEmployeeId:
+          type: integer
+          description: Employee ID who created the request
+        identifier:
+          type: string
+          format: uuid
+          description: Unique request identifier
+        note:
+          type: string
+          nullable: true
+          description: Request note
+        reason:
+          type: string
+          nullable: true
+          description: Leave reason
+        leaveReason:
+          type: string
+          nullable: true
+          description: Leave reason category
+        status:
+          type: integer
+          description: Request status code (0=pending)
+        leaveRequestType:
+          type: integer
+          description: Type of leave request
+        approverEmployeeId:
+          type: integer
+          nullable: true
+          description: Current approver employee ID
+        dateApprovedRejected:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date when approved or rejected
+        systemGenerated:
+          type: boolean
+          description: Whether request was system generated
+        deductionType:
+          type: integer
+          description: Deduction type code
+        deductionSource:
+          type: integer
+          description: Deduction source code
+        penalityCause:
+          type: string
+          nullable: true
+          description: Penalty cause if applicable
+        commentIdentifier:
+          type: string
+          format: uuid
+          description: Comment thread identifier
+        overrideRestrictions:
+          type: boolean
+          description: Whether restrictions were overridden
+        isHourlyLeave:
+          type: boolean
+          description: Whether this is hourly leave
+        totalLeaveDuration:
+          $ref: '#/components/schemas/LeaveDuration'
+        totalCalendarDuration:
+          $ref: '#/components/schemas/LeaveDuration'
+        hourlyDetails:
+          type: array
+          items:
+            type: object
+          description: Hourly leave details (if hourly leave)
+        teamOnLeave:
+          type: array
+          items:
+            type: object
+          description: Team members on leave during same period
+        documentProofs:
+          type: array
+          items:
+            type: object
+          description: Supporting documents
+        notifyTo:
+          type: array
+          items:
+            type: integer
+          description: Employee IDs to notify
+        leaveApprovalLogs:
+          type: array
+          items:
+            type: object
+          description: Approval workflow logs
+        overriddenRules:
+          type: array
+          items:
+            type: object
+          description: List of overridden restriction rules
+        leaveAdvancePreferences:
+          type: object
+          description: Advance leave preferences
+
+    EncashmentRequestsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EncashmentRequest'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    EncashmentRequest:
+      type: object
+      description: Leave encashment request object
+
+    CompOffRequestsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompOffRequest'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    CompOffRequest:
+      type: object
+      description: Compensatory off request object
+
+    LeavePlanListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeavePlanSummary'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    LeavePlanSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Leave plan ID
+        name:
+          type: string
+          description: Leave plan name
+        description:
+          type: string
+          nullable: true
+          description: Leave plan description
+        employeesCount:
+          type: integer
+          description: Number of employees on this plan
+        identifier:
+          type: string
+          format: uuid
+          description: Unique identifier
+        yearStartDate:
+          type: string
+          format: date
+          description: Leave year start date
+        isDefault:
+          type: boolean
+          description: Whether this is the default plan
+        isYearStartDateBasedOnDOJ:
+          type: boolean
+          description: Whether year start is based on date of joining
+        showKekaLeavePolicyExplanation:
+          type: boolean
+          description: Whether to show Keka policy explanation
+        addCustomLeavePolicyDocument:
+          type: boolean
+          description: Whether custom policy document is added
+        leavePolicyDocument:
+          $ref: '#/components/schemas/Document'
+        leaveCalendarStartDate:
+          type: string
+          format: date-time
+          description: Calendar start date
+        leaveCalendarEndDate:
+          type: string
+          format: date-time
+          description: Calendar end date
+        firstLeaveCalendarYearStartDate:
+          type: string
+          format: date-time
+          description: First calendar year start date
+        configuration:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaveTypeConfiguration'
+        restrictedLeaveTypePairs:
+          type: array
+          items:
+            type: object
+          description: Pairs of leave types that cannot be combined
+
+    LeavePlanResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LeavePlan'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    LeavePlan:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Leave plan ID
+        name:
+          type: string
+          description: Leave plan name
+        description:
+          type: string
+          nullable: true
+          description: Leave plan description
+        identifier:
+          type: string
+          format: uuid
+          description: Unique identifier
+        yearStartDate:
+          type: string
+          format: date
+          description: Leave year start date
+        isDefault:
+          type: boolean
+          description: Whether this is the default plan
+        isYearStartDateBasedOnDOJ:
+          type: boolean
+          description: Whether year start is based on date of joining
+        showKekaLeavePolicyExplanation:
+          type: boolean
+          description: Whether to show Keka policy explanation
+        addCustomLeavePolicyDocument:
+          type: boolean
+          description: Whether custom policy document is added
+        leavePolicyDocument:
+          $ref: '#/components/schemas/Document'
+        leaveCalendarStartDate:
+          type: string
+          format: date-time
+          description: Calendar start date
+        leaveCalendarEndDate:
+          type: string
+          format: date-time
+          description: Calendar end date
+        firstLeaveCalendarYearStartDate:
+          type: string
+          format: date-time
+          description: First calendar year start date
+        configuration:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaveTypeConfiguration'
+        restrictedLeaveTypePairs:
+          type: array
+          items:
+            type: object
+          description: Pairs of leave types that cannot be combined
+
+    LeaveTypeConfiguration:
+      type: object
+      properties:
+        isSetupComplete:
+          type: boolean
+          description: Whether setup is complete for this leave type
+        isEarnedLeave:
+          type: boolean
+          description: Whether this is an earned leave type
+        leaveType:
+          type: object
+          description: Leave type details
+        allowedDays:
+          type: object
+          description: Allowed days configuration
+        leaveQuota:
+          type: object
+          description: Leave quota settings
+        leaveAccrual:
+          type: object
+          description: Accrual configuration
+        applyingLeave:
+          type: object
+          description: Leave application rules
+        leaveRestrictions:
+          type: object
+          description: Leave restriction rules
+        interveningHolidays:
+          type: object
+          description: Holiday handling configuration
+        leaveApproval:
+          type: object
+          description: Approval workflow configuration
+        yearEndProcessing:
+          type: object
+          description: Year end processing configuration
+
+    Document:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Document ID
+        identifier:
+          type: string
+          format: uuid
+          nullable: true
+          description: Unique identifier
+        fileId:
+          type: string
+          nullable: true
+          description: File storage ID
+        location:
+          type: string
+          nullable: true
+          description: File storage location
+        size:
+          type: number
+          description: File size in bytes
+        contentType:
+          type: string
+          nullable: true
+          description: MIME type
+        name:
+          type: string
+          nullable: true
+          description: File name
+        uploadedBy:
+          type: string
+          nullable: true
+          description: Uploader name
+        uploadedOn:
+          type: integer
+          description: Upload timestamp
+        downloadUrl:
+          type: string
+          nullable: true
+          description: URL to download the file
+
+    LeaveTypeNamesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'Map of leave type IDs to names (e.g., "17134" to "Sick Leave")'
+        succeeded:
+          type: boolean
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string

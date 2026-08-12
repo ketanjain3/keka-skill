@@ -1,0 +1,1425 @@
+openapi: 3.0.3
+info:
+  title: Keka HR Dashboard API
+  description: API endpoints for the Keka HR Dashboard module
+  version: 1.0.0
+
+servers:
+  - url: https://{tenant}.keka.com/k/dashboard
+    variables:
+      tenant:
+        default: demo
+        description: Tenant subdomain
+
+paths:
+  /api/dashboard/configurations:
+    get:
+      operationId: getDashboardConfigurations
+      summary: Retrieve dashboard widget configurations for the current user
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: Dashboard configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardConfigurationResponse'
+
+  /api/employee/surveys/active:
+    get:
+      operationId: getActiveSurveys
+      summary: Get list of active employee surveys
+      tags:
+        - Surveys
+      responses:
+        '200':
+          description: Active surveys retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveSurveysResponse'
+
+  /api/wall/post:
+    get:
+      operationId: getWallPosts
+      summary: Retrieve paginated wall posts
+      tags:
+        - Wall
+      parameters:
+        - name: pageIndex
+          in: query
+          description: Page number (1-indexed)
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: pageSize
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 5
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Wall posts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WallPostsResponse'
+
+  /api/dashboard/wall/todayeventsstats:
+    get:
+      operationId: getTodayEventStats
+      summary: Get statistics for today's events (birthdays, anniversaries, new joinees)
+      tags:
+        - Wall
+      parameters:
+        - name: currentDate
+          in: query
+          description: Date to get stats for (YYYY-MM-DD format)
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2026-01-12'
+      responses:
+        '200':
+          description: Today's event statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodayEventStatsResponse'
+
+  /api/dashboard/wall/wallsettings:
+    get:
+      operationId: getWallSettings
+      summary: Get wall feature settings and permissions
+      tags:
+        - Wall
+      responses:
+        '200':
+          description: Wall settings retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WallSettingsResponse'
+
+  /api/inbox/pendingapprovalscount:
+    get:
+      operationId: getPendingApprovalsCount
+      summary: Get count of pending approval requests by category
+      tags:
+        - Inbox
+      responses:
+        '200':
+          description: Pending approvals count retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingApprovalsCountResponse'
+
+  /api/dashboard/holidays:
+    get:
+      operationId: getDashboardHolidays
+      summary: Get list of holidays for the current user
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: Holidays retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HolidaysResponse'
+
+  /api/holiday/settings/leavetype/floatername:
+    get:
+      operationId: getFloaterLeaveName
+      summary: Get the display name for floater leave type
+      tags:
+        - Holiday Settings
+      responses:
+        '200':
+          description: Floater leave name retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FloaterLeaveNameResponse'
+
+  /api/dashboard/onleavetoday:
+    get:
+      operationId: getOnLeaveToday
+      summary: Get paginated list of employees on leave today
+      tags:
+        - Dashboard
+      parameters:
+        - name: pageSize
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 6
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: On leave today list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnLeaveTodayResponse'
+
+  /api/dashboard/teamworkingremotely:
+    get:
+      operationId: getTeamWorkingRemotely
+      summary: Get paginated list of team members working remotely today
+      tags:
+        - Dashboard
+      parameters:
+        - name: pageSize
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 6
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Team working remotely list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamWorkingRemotelyResponse'
+
+  /api/mytime/attendance/attendancemodulestatus:
+    get:
+      operationId: getAttendanceModuleStatus
+      summary: Get attendance module status for the current employee
+      tags:
+        - Attendance
+      responses:
+        '200':
+          description: Attendance module status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceModuleStatusResponse'
+
+  /api/mytime/attendance/attendancecapturescheme:
+    get:
+      operationId: getAttendanceCaptureScheme
+      summary: Get attendance capture scheme configuration for the current employee
+      tags:
+        - Attendance
+      responses:
+        '200':
+          description: Attendance capture scheme retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceCaptureSchemeResponse'
+
+  /api/me/leave/isleaveplanassigned:
+    get:
+      operationId: getIsLeavePlanAssigned
+      summary: Check if a leave plan is assigned to the current employee
+      tags:
+        - Leave
+      responses:
+        '200':
+          description: Leave plan assignment status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IsLeavePlanAssignedResponse'
+
+  /api/me/weeklyoffpolicy:
+    get:
+      operationId: getWeeklyOffPolicy
+      summary: Get weekly off policy for the current employee
+      tags:
+        - Leave
+      responses:
+        '200':
+          description: Weekly off policy retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeeklyOffPolicyResponse'
+
+  /api/mytime/attendance/attendancedayrequests:
+    get:
+      operationId: getAttendanceDayRequests
+      summary: Get attendance day requests (WFH, on-duty, clock-in entries)
+      tags:
+        - Attendance
+      responses:
+        '200':
+          description: Attendance day requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceDayRequestsResponse'
+
+  /api/mytime/attendance/shiftweekoffdetails:
+    get:
+      operationId: getShiftWeekOffDetails
+      summary: Get shift and week-off details for the current employee
+      tags:
+        - Attendance
+      responses:
+        '200':
+          description: Shift week-off details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShiftWeekOffDetailsResponse'
+
+  /api/me/leave/summary:
+    get:
+      operationId: getLeaveSummary
+      summary: Get leave summary including balances, transactions, and history
+      tags:
+        - Leave
+      parameters:
+        - name: forDate
+          in: query
+          description: Date to get leave summary for (YYYY-MM-DD format)
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2026-01-12'
+      responses:
+        '200':
+          description: Leave summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveSummaryResponse'
+
+  /api/dashboard/wall/birthdays:
+    get:
+      operationId: getWallBirthdays
+      summary: Get list of employees with birthdays around the specified date
+      tags:
+        - Wall
+      parameters:
+        - name: currentDate
+          in: query
+          description: Date to get birthdays for (YYYY-MM-DD format)
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2026-01-12'
+      responses:
+        '200':
+          description: Birthdays retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirthdaysResponse'
+
+components:
+  schemas:
+    # Common Response Wrapper
+    ApiResponse:
+      type: object
+      properties:
+        succeeded:
+          type: boolean
+          description: Indicates if the request was successful
+        message:
+          type: string
+          description: Response message
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of error messages
+
+    # Pagination wrapper
+    PaginatedResponse:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          description: Current page number
+        totalPages:
+          type: integer
+          description: Total number of pages
+        totalItems:
+          type: integer
+          description: Total number of items
+        itemsPerPage:
+          type: integer
+          description: Number of items per page
+        sortBy:
+          type: string
+          nullable: true
+          description: Field to sort by
+        sortOrder:
+          type: string
+          nullable: true
+          description: Sort order (asc/desc)
+        continuationToken:
+          type: string
+          nullable: true
+          description: Token for cursor-based pagination
+
+    # Dashboard Configuration
+    DashboardConfigurationResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/DashboardConfiguration'
+
+    DashboardConfiguration:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Configuration ID
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardWidget'
+          description: List of dashboard widgets
+
+    DashboardWidget:
+      type: object
+      properties:
+        identifier:
+          type: string
+          format: uuid
+          description: Unique widget identifier
+        title:
+          type: string
+          description: Widget display title
+        type:
+          type: integer
+          description: Widget type (0=Inbox, 1=Holidays, 2=OnLeave, 3=WorkingRemotely, 4=AttendanceClockIn, 6=LeaveBalance)
+        tileColor:
+          type: integer
+          description: Widget tile color
+        sequenceOrder:
+          type: integer
+          description: Widget display order
+        visibilityType:
+          type: integer
+          description: Widget visibility type
+
+    # Active Surveys
+    ActiveSurveysResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Survey'
+
+    Survey:
+      type: object
+      properties:
+        id:
+          type: integer
+        identifier:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+
+    # Wall Posts
+    WallPostsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/WallPost'
+
+    WallPost:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Post ID
+        reactionIdentifier:
+          type: string
+          format: uuid
+          description: Identifier for reactions
+        postIdentifier:
+          type: string
+          format: uuid
+          description: Unique post identifier
+        postType:
+          type: integer
+          description: Type of post (0=Post, 1=Poll, 2=Announcement)
+        authorId:
+          type: integer
+          description: Author employee ID
+        postedOn:
+          type: string
+          format: date-time
+          description: Post creation timestamp
+        isAddedFromWall:
+          type: boolean
+          description: Whether post was added from wall
+        authorName:
+          type: string
+          description: Author display name
+        authorProfileImageUrl:
+          type: string
+          nullable: true
+          description: Author profile image URL
+        groupId:
+          type: integer
+          description: Group ID (0 for company-wide)
+        selectedDepartments:
+          type: array
+          items:
+            type: integer
+          description: List of target department IDs
+        selectedLocations:
+          type: array
+          items:
+            type: integer
+          description: List of target location IDs
+        wallType:
+          type: string
+          nullable: true
+          description: Wall type
+
+    # Today Event Stats
+    TodayEventStatsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/TodayEventStats'
+
+    TodayEventStats:
+      type: object
+      properties:
+        birthdaysCount:
+          type: integer
+          description: Number of birthdays today
+        workAnniversariesCount:
+          type: integer
+          description: Number of work anniversaries today
+        newJoineesCount:
+          type: integer
+          description: Number of new joinees today
+
+    # Wall Settings
+    WallSettingsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/WallSettings'
+
+    WallSettings:
+      type: object
+      properties:
+        isDepartmentWallEnabled:
+          type: boolean
+          description: Whether department-specific walls are enabled
+        canEmployeeAddPost:
+          type: boolean
+          description: Whether employees can add posts
+        canEmployeeAddPoll:
+          type: boolean
+          description: Whether employees can add polls
+        canEmployeeAddAnnouncement:
+          type: boolean
+          description: Whether employees can add announcements
+        enablePinAnnouncementsBasedOnDuration:
+          type: boolean
+          description: Whether announcements are auto-pinned based on duration
+        durationToPinAnnouncementOnTop:
+          $ref: '#/components/schemas/Duration'
+        isBirthdayWidgetHidden:
+          type: boolean
+          description: Whether birthday widget is hidden
+
+    Duration:
+      type: object
+      properties:
+        unit:
+          type: integer
+          description: Duration unit (1=Hours, 2=Days, 3=Weeks, 4=Months)
+        duration:
+          type: number
+          description: Duration value
+        durationString:
+          type: string
+          description: Human-readable duration string
+
+    # Pending Approvals Count
+    PendingApprovalsCountResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PendingApprovalsCount'
+
+    PendingApprovalsCount:
+      type: object
+      properties:
+        leaveRequestCount:
+          type: integer
+        compoffRequestCount:
+          type: integer
+        leaveEncashmentRequestCount:
+          type: integer
+        timesheetRequestCount:
+          type: integer
+        attendanceAdjustmentRequestCount:
+          type: integer
+        attendanceRemoteClockInRequestCount:
+          type: integer
+        attendanceWorkingRemotelyRequestCount:
+          type: integer
+        attendancePartialDayRequestCount:
+          type: integer
+        attendanceShiftRequestCount:
+          type: integer
+        attendanceWeeklyOffRequestCount:
+          type: integer
+        expenseClaimRequestCount:
+          type: integer
+        profileApprovalRequestCount:
+          type: integer
+        exitRequestCount:
+          type: integer
+        loanRequestCount:
+          type: integer
+        financeRequestsCount:
+          type: integer
+        exitTaskRequestsCount:
+          type: integer
+        onboardingTaskRequestsCount:
+          type: integer
+        probationRequestsCount:
+          type: integer
+        objectiveRequestsCount:
+          type: integer
+        offerLetterRequestsCount:
+          type: integer
+        pulseRequestsCount:
+          type: integer
+        overtimeRequestsCount:
+          type: integer
+        reviewNominationCount:
+          type: integer
+        reviewSummaryCount:
+          type: integer
+        reviewReleaseCount:
+          type: integer
+        reviewFormsCount:
+          type: integer
+        feedbackRequestsCount:
+          type: integer
+        reviewMeetingsCount:
+          type: integer
+        reviewAcknowledgementCount:
+          type: integer
+        reviewCalibrationsCount:
+          type: integer
+        requisitionRequestsCount:
+          type: integer
+        interviewFeedbacksCount:
+          type: integer
+        internalJobPostingApplicationsCount:
+          type: integer
+        exitSurveysCount:
+          type: integer
+        assetAcknowledgementRequestCount:
+          type: integer
+        paymentTransactionRequestCount:
+          type: integer
+        timeframeRequestsCount:
+          type: integer
+        assetRequestCount:
+          type: integer
+        fileUploadRequestsCount:
+          type: integer
+        pipTaskValidationCount:
+          type: integer
+        pipAcknowledgementCount:
+          type: integer
+        pipDisagreeCount:
+          type: integer
+        approveDocumentRequestsCount:
+          type: integer
+        acknowledgeDocumentRequestsCount:
+          type: integer
+        eSignatureDocumentRequestsCount:
+          type: integer
+        salaryIncrementsRequestCount:
+          type: integer
+        approvalWorkFlowRequestCount:
+          type: integer
+        airTicketRequestCount:
+          type: integer
+        helpdeskRequestCount:
+          type: integer
+        careerTrackRequestsCount:
+          type: integer
+        skillApprovalRequestCount:
+          type: integer
+        employeeFormI9RequestCount:
+          type: integer
+        pipApprovalRequestCount:
+          type: integer
+        engageRequestCount:
+          type: integer
+        learnRequestsCount:
+          type: integer
+        totalRequestsCount:
+          type: integer
+          description: Total count of all pending requests
+
+    # Holidays
+    HolidaysResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Holiday'
+
+    Holiday:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Holiday ID
+        name:
+          type: string
+          description: Holiday name
+        description:
+          type: string
+          nullable: true
+          description: Holiday description
+        date:
+          type: string
+          format: date
+          description: Holiday date
+        isFloater:
+          type: boolean
+          description: Whether this is a floater holiday
+        isSpecial:
+          type: boolean
+          description: Whether this is a special holiday
+        holidayListId:
+          type: integer
+          description: ID of the holiday list
+        isRecommended:
+          type: boolean
+          description: Whether this holiday is recommended
+        identifier:
+          type: string
+          format: uuid
+          description: Unique holiday identifier
+        rowIdentifier:
+          type: string
+          nullable: true
+        hasErrors:
+          type: boolean
+        totalErrors:
+          type: integer
+        hasCustomProperties:
+          type: boolean
+
+    # Floater Leave Name
+    FloaterLeaveNameResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: string
+              description: Display name for floater leave type
+              example: Floater Leave
+
+    # On Leave Today
+    OnLeaveTodayResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/PaginatedResponse'
+                - type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/EmployeeOnLeave'
+
+    EmployeeOnLeave:
+      type: object
+      properties:
+        id:
+          type: integer
+        identifier:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        jobTitle:
+          type: string
+        profileImageUrl:
+          type: string
+          nullable: true
+        leaveType:
+          type: string
+        leaveStatus:
+          type: string
+
+    # Team Working Remotely
+    TeamWorkingRemotelyResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/PaginatedResponse'
+                - type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/EmployeeWorkingRemotely'
+
+    EmployeeWorkingRemotely:
+      type: object
+      properties:
+        id:
+          type: integer
+        identifier:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        jobTitle:
+          type: string
+        profileImageUrl:
+          type: string
+          nullable: true
+        remoteWorkType:
+          type: string
+
+    # Attendance Module Status
+    AttendanceModuleStatusResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AttendanceModuleStatus'
+
+    AttendanceModuleStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+        employeeId:
+          type: integer
+          description: Employee ID
+        module:
+          type: integer
+          description: Module type identifier
+        enabled:
+          type: boolean
+          description: Whether the module is enabled
+        lastEnabledOn:
+          type: string
+          format: date-time
+          nullable: true
+        lastDisabledOn:
+          type: string
+          format: date-time
+          nullable: true
+        configuration:
+          type: object
+          nullable: true
+
+    # Attendance Capture Scheme
+    AttendanceCaptureSchemeResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AttendanceCaptureScheme'
+
+    AttendanceCaptureScheme:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Scheme name
+        description:
+          type: string
+          nullable: true
+        isDefault:
+          type: boolean
+          description: Whether this is the default scheme
+        configuration:
+          $ref: '#/components/schemas/AttendanceCaptureConfiguration'
+        isSetUpComplete:
+          type: boolean
+        identifier:
+          type: string
+          format: uuid
+
+    AttendanceCaptureConfiguration:
+      type: object
+      properties:
+        attendanceCapture:
+          $ref: '#/components/schemas/AttendanceCaptureSettings'
+
+    AttendanceCaptureSettings:
+      type: object
+      properties:
+        biometricEnabled:
+          type: boolean
+        manualWebClockinEnabled:
+          type: boolean
+        requireLocationForWebClockIn:
+          type: boolean
+        requireCommentForManualClockin:
+          type: boolean
+        requireCommentType:
+          type: integer
+        ipRestrictedForManualClockin:
+          type: boolean
+        manualClockinRestrictedNetworks:
+          type: array
+          items:
+            type: string
+        allowForgotIdCard:
+          type: boolean
+        ipRestrictedForForgotId:
+          type: boolean
+        restrictedNetworksForForgotId:
+          type: array
+          items:
+            type: string
+        allowMissingSwipeAdjustment:
+          type: boolean
+        missingSwipeAdjustmentExceedLimit:
+          type: integer
+        missingSwipeAdjustmentExceedDuration:
+          type: integer
+        maxAllowedAdjustmentsEnabled:
+          type: boolean
+        maxAllowedMissingSwipeAdjustments:
+          type: integer
+        maxAllowedMissingSwipeAdjustmentDuration:
+          type: integer
+        missingSwipeAdjustmentApprovalSettings:
+          $ref: '#/components/schemas/ApprovalSettings'
+
+    ApprovalSettings:
+      type: object
+      properties:
+        approvalRequestType:
+          type: integer
+        requireApproval:
+          type: boolean
+        requireApprovalComment:
+          type: boolean
+        requireRejectionComment:
+          type: boolean
+        autoApprovedIfNoApproversAvailable:
+          type: boolean
+        approvalChain:
+          $ref: '#/components/schemas/ApprovalChain'
+
+    ApprovalChain:
+      type: object
+      properties:
+        approverLevels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApproverLevel'
+        hasGlobalNotify:
+          type: boolean
+        globalNotifyApprovers:
+          type: array
+          items:
+            type: object
+        approvalChainNotifyType:
+          type: integer
+        hasApproverLevels:
+          type: boolean
+        lastLevel:
+          type: integer
+
+    ApproverLevel:
+      type: object
+      properties:
+        level:
+          type: integer
+        approvers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Approver'
+        sendApprovalReminders:
+          type: boolean
+        approvalReminderInDays:
+          type: integer
+        skipToNextLevel:
+          type: boolean
+        skipToNextLevelInDays:
+          type: integer
+        skipIfApproverDoesntExist:
+          type: boolean
+
+    Approver:
+      type: object
+      properties:
+        approverType:
+          type: integer
+          description: Type of approver (1=ReportingManager)
+        approverId:
+          type: string
+          nullable: true
+        approverName:
+          type: string
+        approverProfileImage:
+          type: string
+        approverGroupTypeId:
+          type: integer
+
+    # Is Leave Plan Assigned
+    IsLeavePlanAssignedResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: boolean
+              description: Whether a leave plan is assigned to the employee
+
+    # Weekly Off Policy
+    WeeklyOffPolicyResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                weeklyOff:
+                  $ref: '#/components/schemas/WeeklyOffPolicy'
+
+    WeeklyOffPolicy:
+      type: object
+      properties:
+        id:
+          type: integer
+        versionIdentifier:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Policy name
+        description:
+          type: string
+          nullable: true
+        isDefault:
+          type: boolean
+        effectiveFrom:
+          type: string
+          format: date
+          description: Date from which policy is effective
+        weekOffs:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekOff'
+        isAdhocWeeklyOff:
+          type: boolean
+        isArchived:
+          type: boolean
+
+    WeekOff:
+      type: object
+      properties:
+        dayOfWeek:
+          type: integer
+          description: Day of week (0=Sunday, 6=Saturday)
+        dayOffs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayOff'
+
+    DayOff:
+      type: object
+      properties:
+        dayFrequencyType:
+          type: integer
+          description: Frequency type (0=Every week)
+        dayType:
+          type: integer
+          description: Day type (2=Full day off)
+
+    # Attendance Day Requests
+    AttendanceDayRequestsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AttendanceDayRequests'
+
+    AttendanceDayRequests:
+      type: object
+      properties:
+        workfromhome:
+          type: array
+          items:
+            type: object
+          description: Work from home requests
+        workfromhomeLastEntry:
+          type: object
+          nullable: true
+        onduty:
+          type: array
+          items:
+            type: object
+          description: On duty requests
+        ondutyLastEntry:
+          type: object
+          nullable: true
+        isWorkingRemotelyClockInRequired:
+          type: boolean
+          description: Whether clock-in is required for remote work
+        webclockin:
+          type: array
+          items:
+            type: object
+          description: Web clock-in entries
+        webclockinLastEntry:
+          type: object
+          nullable: true
+        remoteclockin:
+          type: array
+          items:
+            type: object
+          description: Remote clock-in entries
+        remoteclockinLastEntry:
+          type: object
+          nullable: true
+        forgotidcard:
+          type: array
+          items:
+            type: object
+          description: Forgot ID card entries
+        forgotIdclockinLastEntry:
+          type: object
+          nullable: true
+
+    # Shift Week Off Details
+    ShiftWeekOffDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ShiftWeekOffDetailsData'
+
+    ShiftWeekOffDetailsData:
+      type: object
+      properties:
+        shiftWeekoffDetails:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ShiftWeekOffDetail'
+          description: Map of date to shift/week-off details
+        currentTime:
+          type: string
+          format: date-time
+        employeeName:
+          type: string
+
+    ShiftWeekOffDetail:
+      type: object
+      properties:
+        weekOffType:
+          type: integer
+          description: Week off type (0=Working day)
+        shiftTime:
+          $ref: '#/components/schemas/ShiftTime'
+        weekOffName:
+          type: string
+        shiftName:
+          type: string
+        weekOffIdentifier:
+          type: string
+          format: uuid
+        shiftIdentifier:
+          type: string
+          format: uuid
+        isShiftChanged:
+          type: boolean
+        isAutoAssigner:
+          type: boolean
+        autoAssignerRules:
+          type: array
+          items:
+            type: object
+
+    ShiftTime:
+      type: object
+      properties:
+        shiftStartTime:
+          $ref: '#/components/schemas/TimeOfDay'
+        shiftEndTime:
+          $ref: '#/components/schemas/TimeOfDay'
+        slotStartTime:
+          $ref: '#/components/schemas/TimeOfDay'
+        slotEndTime:
+          $ref: '#/components/schemas/TimeOfDay'
+        shiftDuration:
+          type: number
+          description: Shift duration in hours
+        shiftDurationInHHMM:
+          type: string
+          description: Shift duration in HH:MM format
+        breakDuration:
+          type: number
+        dynamicShiftTimings:
+          type: boolean
+        dynamicShiftSlotDuration:
+          $ref: '#/components/schemas/TimeOfDay'
+        isAutoAssigner:
+          type: boolean
+        shiftStart:
+          type: string
+          format: date-time
+        shiftEnd:
+          type: string
+          format: date-time
+        attendanceDate:
+          type: string
+          format: date-time
+        shiftSlotStartTime:
+          type: string
+          format: date-time
+        shiftSlotEndTime:
+          type: string
+          format: date-time
+
+    TimeOfDay:
+      type: object
+      properties:
+        hours:
+          type: integer
+          minimum: 0
+          maximum: 23
+        minutes:
+          type: integer
+          minimum: 0
+          maximum: 59
+
+    # Leave Summary
+    LeaveSummaryResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/LeaveSummary'
+
+    LeaveSummary:
+      type: object
+      properties:
+        leaveBalanceTransactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaveBalanceTransaction'
+        leaveSummaries:
+          type: array
+          items:
+            type: object
+          description: Summary of leave balances by type
+        leavePlan:
+          type: object
+          description: Leave plan details
+        yearStartDate:
+          type: string
+          format: date
+        compoffRequestsCount:
+          type: integer
+          description: Number of comp-off requests
+        employee:
+          type: object
+          description: Employee details
+        leaveHistory:
+          type: array
+          items:
+            type: object
+          description: Leave history records
+        leaveCalendarYears:
+          type: array
+          items:
+            type: integer
+          description: Available calendar years
+
+    LeaveBalanceTransaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        requestId:
+          type: string
+          nullable: true
+        employeeId:
+          type: integer
+        transactionDate:
+          type: string
+          format: date-time
+        transactionOn:
+          type: string
+          format: date-time
+        typeId:
+          type: integer
+          description: Leave type ID
+        planId:
+          type: integer
+          description: Leave plan ID
+        duration:
+          $ref: '#/components/schemas/LeaveDuration'
+        transactionType:
+          type: integer
+          description: Transaction type (0=Credit)
+        expiresOn:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        transactionSource:
+          type: integer
+          description: Source of transaction (1=Accrual)
+        creditRestrictionType:
+          type: integer
+        metaData:
+          type: object
+          additionalProperties:
+            type: string
+        expiryType:
+          type: string
+          nullable: true
+        creditedOn:
+          type: string
+          format: date-time
+        creditedBy:
+          type: integer
+
+    LeaveDuration:
+      type: object
+      properties:
+        unit:
+          type: integer
+          description: Duration unit (2=Days)
+        duration:
+          type: number
+          description: Duration value
+
+    # Birthdays
+    BirthdaysResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/BirthdayEmployee'
+
+    BirthdayEmployee:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Employee ID
+        identifier:
+          type: string
+          format: uuid
+          description: Unique employee identifier
+        displayName:
+          type: string
+          description: Employee display name
+        jobTitle:
+          type: string
+          description: Employee job title
+        profileImageUrl:
+          type: string
+          nullable: true
+          description: Profile image URL
+        dateJoined:
+          type: string
+          format: date
+          description: Date employee joined
+        dateOfBirth:
+          type: string
+          format: date
+          description: Employee date of birth
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Dashboard
+    description: Dashboard related endpoints
+  - name: Wall
+    description: Company wall and social features
+  - name: Inbox
+    description: Inbox and approval requests
+  - name: Surveys
+    description: Employee surveys
+  - name: Holiday Settings
+    description: Holiday configuration
+  - name: Attendance
+    description: Attendance tracking and management
+  - name: Leave
+    description: Leave management
