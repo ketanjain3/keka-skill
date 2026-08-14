@@ -8,11 +8,9 @@
 # ]
 # ///
 import asyncio
-import base64
 import json
 import keyring
 import logging
-import os
 import shutil
 import subprocess
 import sys
@@ -53,8 +51,8 @@ Examples:
 # Keka domain configuration
 KEKA_DOMAIN = "think41.keka.com"
 LOGIN_DOMAIN = "app.keka.com"
-WORK_EMAIL_DOMAIN = "@think41.com"
 USER_DATA_DIR = Path.home() / ".keka"
+PLAYWRIGHT_PROFILE_DIR = USER_DATA_DIR / "playwright_profile"
 
 # Keyring configuration
 KEYRING_SERVICE = "keka"
@@ -84,85 +82,6 @@ class Authentication:
 
     def __init__(self):
         self._cached_token = None
-
-    @staticmethod
-    def _decode_jwt_email(token):
-        """Extract the 'email' claim from a JWT access token, if present."""
-        try:
-            payload = token.split('.')[1]
-            payload += '=' * (-len(payload) % 4)
-            return json.loads(base64.urlsafe_b64decode(payload)).get('email')
-        except Exception:
-            return None
-
-    @staticmethod
-    def _chrome_user_data_dir():
-        """Locate the local Chrome 'User Data' directory for this OS, if any."""
-        home = Path.home()
-        for candidate in (
-            Path(os.environ.get("LOCALAPPDATA", home)) / "Google" / "Chrome" / "User Data",  # Windows
-            home / "Library" / "Application Support" / "Google" / "Chrome",                   # macOS
-            home / ".config" / "google-chrome",                                               # Linux
-        ):
-            if candidate.exists():
-                return candidate
-        return None
-
-    def list_chrome_profiles(self):
-        """List local Chrome profiles as [{'dir_name', 'display_name', 'email'}, ...]."""
-        user_data_dir = self._chrome_user_data_dir()
-        if not user_data_dir:
-            return []
-
-        profiles = []
-        for entry in sorted(user_data_dir.iterdir()):
-            if not entry.is_dir() or (entry.name != "Default" and not entry.name.startswith("Profile ")):
-                continue
-            prefs_file = entry / "Preferences"
-            if not prefs_file.exists():
-                continue
-            try:
-                prefs = json.loads(prefs_file.read_text(encoding="utf-8-sig"))
-            except Exception:
-                continue
-            account_info = prefs.get("account_info") or []
-            email = account_info[0].get("email") if account_info else None
-            display_name = prefs.get("profile", {}).get("name", entry.name)
-            profiles.append({"dir_name": entry.name, "display_name": display_name, "email": email})
-        return profiles
-
-    def choose_work_chrome_profile(self):
-        """Pick the Chrome profile signed into a WORK_EMAIL_DOMAIN account.
-
-        Auto-picks when there's exactly one match, prompts interactively when
-        there are several, and exits with guidance when there are none - this
-        tool only works from a Chrome profile already signed into a work
-        account.
-        """
-        work_profiles = [
-            p for p in self.list_chrome_profiles()
-            if p["email"] and p["email"].lower().endswith(WORK_EMAIL_DOMAIN)
-        ]
-
-        if not work_profiles:
-            print(f"No Chrome profile on this machine is signed into a {WORK_EMAIL_DOMAIN} account.",
-                  file=sys.stderr)
-            print(f"Sign into Chrome with your {WORK_EMAIL_DOMAIN} work Google account "
-                  f"(Chrome menu > profile icon > \"Add\"/\"Sign in\"), then run 'keka login' again.",
-                  file=sys.stderr)
-            sys.exit(1)
-
-        if len(work_profiles) == 1:
-            return work_profiles[0]
-
-        print(f"Multiple Chrome profiles are signed into a {WORK_EMAIL_DOMAIN} account:")
-        for i, p in enumerate(work_profiles, 1):
-            print(f"  {i}. {p['display_name']} ({p['email']})")
-        while True:
-            choice = input(f"Choose the profile to use for Keka [1-{len(work_profiles)}]: ").strip()
-            if choice.isdigit() and 1 <= int(choice) <= len(work_profiles):
-                return work_profiles[int(choice) - 1]
-            print("Invalid choice, try again.")
 
     @staticmethod
     def validate_keka_url(url):
@@ -267,28 +186,15 @@ class Authentication:
         keka_url = f"https://{KEKA_DOMAIN}"
         logger.info(f"Starting authentication, navigating to {keka_url}")
 
-        profile = self.choose_work_chrome_profile()
-        user_data_dir = self._chrome_user_data_dir()
-        print(f"Using Chrome profile \"{profile['display_name']}\" ({profile['email']}). "
-              f"If it isn't already signed into Keka, sign in when the browser opens.")
-
         async with async_playwright() as p:
             context = None
             try:
-                logger.debug(f"Launching Chrome profile {profile['dir_name']} at {user_data_dir}")
-                try:
-                    context = await p.chromium.launch_persistent_context(
-                        str(user_data_dir),
-                        headless=False,
-                        channel="chrome",
-                        args=[f"--profile-directory={profile['dir_name']}"],
-                    )
-                except Exception as e:
-                    logger.exception(f"Failed to launch Chrome profile {profile['dir_name']}: {e}")
-                    print(f"Could not launch Chrome with profile \"{profile['display_name']}\" - "
-                          f"it's likely already open. Close all Chrome windows and try again.",
-                          file=sys.stderr)
-                    sys.exit(7)
+                logger.debug(f"Launching browser with profile at {PLAYWRIGHT_PROFILE_DIR}")
+                context = await p.chromium.launch_persistent_context(
+                    PLAYWRIGHT_PROFILE_DIR,
+                    headless=False,
+                    channel="chrome"
+                )
                 logger.debug("Browser launched successfully")
 
                 page = await context.new_page()
@@ -334,15 +240,6 @@ class Authentication:
                 if not access_token:
                     logger.error("Failed to extract access token after authentication")
                     print("curl: (7) Failed to connect to authentication server", file=sys.stderr)
-                    sys.exit(7)
-
-                email = self._decode_jwt_email(access_token)
-                if not email or not email.lower().endswith(WORK_EMAIL_DOMAIN):
-                    logger.error(f"Logged in as {email!r}, not a {WORK_EMAIL_DOMAIN} account")
-                    print(f"Logged in as {email or 'an unknown account'}, which isn't your "
-                          f"{WORK_EMAIL_DOMAIN} work account. Log out of that account in the "
-                          f"browser and try again.", file=sys.stderr)
-                    await context.close()
                     sys.exit(7)
 
                 expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
@@ -905,10 +802,6 @@ class Expense:
 async def cmd_curl(auth: Authentication, curl_args):
     """Handle 'keka curl' command - run an authenticated curl against any
     Keka API endpoint.
-
-    Used with the explicit request by the user, request user's permission
-    before using this functionality. This is a convenience for advanced users
-
 
     This is the escape hatch for experimenting with Keka's API surface: poke
     at an endpoint to see its shape before wiring up a proper method for it,
